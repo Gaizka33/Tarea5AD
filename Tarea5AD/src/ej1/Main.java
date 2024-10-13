@@ -19,50 +19,24 @@ public class Main {
 	private static Scanner abielto = new Scanner(System.in);
 	private static DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-	public static void main(String[] args) {
+	public static Alumno crearAlumno(Scanner scanner) {
+		System.out.println("Dame la fecha de nacimiento del alumno (dd-MM-yyyy): ");
+		String fechaNacimientoString = scanner.next();
+		LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoString, formato);
 
-		try {
-			System.out.println("Cual es el fichero que quieres leer?");
-			ficherosolicitado = new File(abielto.next());
-			conexionescribir = new FileOutputStream(ficherosolicitado);
-			escribir = new ObjectOutputStream(conexionescribir);
-			for (int i = 0; i < 5; i++) {
-				// Solicita la fecha de nacimiento del alumno
-				System.out.println("Dame la fecha de nacimiento del alumno (dd-MM-yyyy): ");
-				String fechaNacimientoString = abielto.next();
-				LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoString, formato); // Parsea la fecha
+		System.out.println("Ahora Dame los datos del alumno (Nombre, Apellidos, Ciclo, Curso, Grupo, NIA y Genero): ");
+		String nombre = scanner.next();
+		String apellidos = scanner.next();
+		String ciclo = scanner.next();
+		String curso = scanner.next();
+		String grupo = scanner.next();
+		int nia = scanner.nextInt();
+		char genero = scanner.next().charAt(0);
 
-				// Solicita los datos del alumno
-				System.out.println(
-						"Ahora Dame los datos del alumno (Nombre, Apellidos, Ciclo, Curso, Grupo, NIA y Genero): ");
+		return new Alumno(nombre, apellidos, ciclo, curso, grupo, nia, genero, fechaNacimiento);
+	}
 
-				String nombre = abielto.next(); // Nombre del alumno
-				String apellidos = abielto.next(); // Apellidos del alumno
-				String ciclo = abielto.next(); // Ciclo que cursa
-				String curso = abielto.next(); // Curso actual
-				String grupo = abielto.next(); // Grupo al que pertenece
-				int nia = abielto.nextInt(); // Número de identificación del alumno
-				char genero = abielto.next().charAt(0); // Género del alumno
-
-				// Crea un objeto Alumno con los datos recogidos
-				Alumno alumno = new Alumno(nombre, apellidos, ciclo, curso, grupo, nia, genero, fechaNacimiento);
-				escribir.writeObject(alumno);
-			}
-			abielto.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			// Cierra el DataOutputStream
-			try {
-				if (escribir != null) {
-					escribir.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace(); // Imprime la traza de la excepción al cerrar
-			}
-		}
-
+	public static void leerAlumno(File ficherosolicitado) {
 		try {
 			System.out.println("Ahora vamos a leer lo que pone en el archivo");
 			conexionleer = new FileInputStream(ficherosolicitado);
@@ -85,7 +59,33 @@ public class Main {
 				e.printStackTrace(); // Imprime la traza de la excepción al cerrar
 			}
 		}
+	}
 
+	public static void main(String[] args) {
+
+		try {
+			System.out.println("Cual es el fichero que quieres leer?");
+			ficherosolicitado = new File(abielto.next());
+			conexionescribir = new FileOutputStream(ficherosolicitado);
+			escribir = new ObjectOutputStream(conexionescribir);
+			for (int i = 0; i < 5; i++) {
+				escribir.writeObject(crearAlumno(abielto));
+			}
+			abielto.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			// Cierra el DataOutputStream
+			try {
+				if (escribir != null) {
+					escribir.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace(); // Imprime la traza de la excepción al cerrar
+			}
+		}
+		leerAlumno(ficherosolicitado);
 	}
 
 }
